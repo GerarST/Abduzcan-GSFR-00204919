@@ -11,14 +11,14 @@ struct address{
 };
 
 struct Deliverdata{
-     int Persons, amount, payType, maindish, mouth, drink, telephone;
+     int amount, payType, maindish, mouth, drink, telephone;
      string name;
      address Direction;
 };
 struct Deliverdata DataD;
 
 struct Restdata{
-     int Persons,amount, payType, maindish, mouth, drink, telephone;
+     int Persons,amount, payType, maindish, mouth, drink;
      string name;
      address Direction;
 };
@@ -214,7 +214,6 @@ void PrintDeliv(Deliverdata *Deliv){
         }  
 
         cout << "\n\t Acompañamieto: "; 
-
         switch(Deliv[i].mouth){
             case 1:
             cout << "\n\tRollitos de queso.";
@@ -227,7 +226,6 @@ void PrintDeliv(Deliverdata *Deliv){
         }
 
         cout << "\n\t Bebida: ";
-
         switch(Deliv[i].drink){
             case 1:
             cout << "\n\tGaseosa.";
@@ -243,7 +241,6 @@ void PrintDeliv(Deliverdata *Deliv){
         cout << "\n\t" << Deliv[i].amount;
     
         cout << "\n\t Tipo de pago: "; 
-
         switch(Deliv[i].payType){
             case 1:
             cout << "\n\tEfectivo.";
@@ -258,62 +255,63 @@ void PrintDeliv(Deliverdata *Deliv){
 }
 
 void PrintRest(Restdata *Rest){
-for (int i = 0; i < auxR; i++){
+
+    for (int i = 0; i < auxR; i++){
+
     cout << "\n\t Plato principal: ";
+        switch(Rest[i].maindish){
+             case 1:
+             cout << "\n\tPizza.";
+             break;
+             case 2:
+             cout << "\n\tEnsalada.";
+             break;
+             case 3:
+             cout << "\n\tPasta.";
+             break;
+             default: 
+             cout << "\n\tError.";
+             break;                  
+            }  
 
-     switch(Rest[i].maindish){
-         case 1:
-         cout << "\n\tPizza.";
-         break;
-         case 2:
-         cout << "\n\tEnsalada.";
-         break;
-         case 3:
-         cout << "\n\tPasta.";
-         break;
-         default: cout << "\n\tError.";
-         break;                  
-     }  
     cout << "\n\t Acompañamieto: "; 
+             switch(Rest[i].mouth){
+             case 1:
+             cout << "\n\tRollitos de queso.";
+             break;
+             case 2:
+             cout << "\n\tPapas fritas.";
+             break;
+             default: cout << "\n\tError.";
+             break;                  
+            }
 
-         switch(Rest[i].mouth){
-         case 1:
-         cout << "\n\tRollitos de queso.";
-         break;
-         case 2:
-         cout << "\n\tPapas fritas.";
-         break;
-         default: cout << "\n\tError.";
-         break;                  
-     }
    cout << "\n\t Bebida: ";cin.ignore();
-
-         switch(Rest[i].drink){
-         case 1:
-         cout << "\n\tGaseosa.";
-         break;
-         case 2:
-         cout << "\n\tTe.";
-         break;
-         default: cout << "\n\tError.";
-         break;
-     }
+             switch(Rest[i].drink){
+             case 1:
+             cout << "\n\tGaseosa.";
+             break;
+             case 2:
+             cout << "\n\tTe.";
+             break;
+             default: cout << "\n\tError.";
+             break;
+            }
 
     cout << "\n\t Monto: "; 
     cout << "\n\t" << Rest[i].amount;
 
     cout << "\n\t Tipo de pago: "; 
-
-         switch(Rest[i].payType){
-         case 1:
-         cout << "\n\tEfectivo.";
-         break;
-         case 2:
-         cout << "\n\tTarjeta.";
-         break;
-         default: cout << "\n\tError.";
-         break;
-     }    
+             switch(Rest[i].payType){
+             case 1:
+             cout << "\n\tEfectivo.";
+             break;
+             case 2:
+             cout << "\n\tTarjeta.";
+             break;
+             default: cout << "\n\tError.";
+             break;
+            }    
     }
 
 }
