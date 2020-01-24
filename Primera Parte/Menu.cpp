@@ -2,6 +2,9 @@
 #include <string>
 using namespace std;
 
+bool isAdmin = false;
+int auxD = 0, auxR = 0;
+
 struct address{
     int HouseNumber;
     string city, state;
@@ -23,52 +26,78 @@ struct Restdata DataR;
 
 bool login();
 void menu();
-void addDelivery(Deliverdata *Deliv, int size);
-void addRest(Restdata *Rest, int size);
-void OpMenu(int n, int opcion, int Naux1, int Naux2);
-void PrintDeliv(Deliverdata *Deliv, int size);
-void PrintRest(Restdata *Rest, int size);
-
-bool isAdmin = false;
+void addDelivery(Deliverdata *Deliv);
+void addRest(Restdata *Rest);
+void PrintDeliv(Deliverdata *Deliv);
+void PrintRest(Restdata *Rest);
+void searchByName(Deliverdata* array, int size);
+void searchByName(Restdata* array, int size);
 
 int main(){
-    int n = 0, opcion = 0, Naux = 0;
+    int n = 0, opcion = 0;
     Deliverdata Deliv[n];
     Restdata Rest[n]; 
     if(login() == false)
         return 0;
+    do{
+        menu();
+        cin >> opcion;
 
-    menu();
-    cin >> opcion;
-     
- cin.ignore();
+        switch (opcion)
+        {
+            case 1:
+                addDelivery(Deliv);
+            break;
+            case 2:
+                addRest(Rest);
+            break;
+            case 3:
+                PrintDeliv(Deliv);
+            break;
+            case 4:
+                PrintRest(Rest);
+            case 5:
+                break;
+            case 6:
+                searchByName(Deliv, auxD);
+                break;
+            case 7:
+                searchByName(Rest, auxR);
+                break;
+            case 8:
+                return 0;
+                break;
+        
+        default: cout << "Error!\n";
+            break;
+        }
+    }while(opcion > 0 && opcion < 7);
 }
 
 bool login(){
 
-    string user, password = "cin.clear", userVery, passVery;
+    string user, password = "cin.clear", passVery;
     int userType;
     
     cout<<"\t\t\t MENU DE INICIO DE CESION.\n";
     cout<<"\t\t\t Que tipo de cuenta desea usar?: \n\t 1> Administrador. \n\t 2> Empleado. \n\t Opcion: ";
-    cin >> userType; cout << endl;
+    cin >> userType; cin.ignore(); cout << endl;
 
     if(userType == 1){
         cout<<"\t\t\tLOGIN DEl USUARIO: Administrador\n";
-        cout<<"\t\t\t-----------------\n";
-        cout <<"\tUSUARIO: "; cin.ignore();
+        cout<<"\t\t\t--------------------------------\n";
+        cout <<"\tUSUARIO: ";
         getline(cin, user); 
-        cout <<"\n\tPASSWORD: "; cin.ignore();
+        cout <<"\n\tPASSWORD: ";
         cin >> passVery;
 
-        if(password == passVery){
-            cout << "Bienvenido"<< endl;
-            isAdmin = true;
-            return true;
-        }
-        else{
-            cout << "Incorrecto"<<endl;
-        }
+            if(password.compare(passVery) == 0){
+                isAdmin = true;
+                return true;
+            }
+            else{
+                cout << "Incorrecto"<<endl;
+            }
     }
     else if(userType == 2){
 
@@ -77,7 +106,7 @@ bool login(){
         return true;
     }
     else{
-        cout << "alv"<< endl;
+        cout << "Valor invalido!"<< endl;
     }
     return false;
 }
@@ -90,49 +119,63 @@ void menu(){
      cout<<"\n\t 2> Agregar 1 encargo en restaurante";
      cout<<"\n\t 3> Ver pedidos a domicilio";
      cout<<"\n\t 4> Ver encargos en el restaurante";
-     cout<<"\n\t 5> Ver total de venta\n\n";
+     cout<<"\n\t 5> Ver total de venta";
+     cout<<"\n\t 6> Ver pedidos por nombre a domicilio.";
+     cout<<"\n\t 7> Ver pedidos por nombre en restaurante.";
+     cout<<"\n\t 8> Salir.";
+     cout<<"\n\tOpcion: ";
 }
 
-void addDelivery(Deliverdata *Deliv, int size){
+void addDelivery(Deliverdata *Deliv){
+    cout << "\n\t\t\t Bienvenido al portal de ingreso!\n";
+        int size = 0;
+    cout << "Cantidad de pedidos a ingresar: "; cin >> size;
     cin.ignore();
-    cout << "\n\t\t\t Bienvenido al portal de ingreso!";
+    auxD=size;
+
+    Deliv = new Deliverdata[size];
     for (int i = 0; i < size; i++)
     {
    cout << "\n\t Ingrese su nombre: ";
-    getline(cin, Deliv[i].name); cin.ignore();
+    getline(cin, Deliv[i].name);
    cout << "\n\t Digite su dirección... ";
     cout << "\n\t Digite el numero de casa: ";
     cin >> Deliv[i].Direction.HouseNumber; cin.ignore();
     cout << "\n\t Digite la ciudad: ";
-    getline(cin, Deliv[i].Direction.city); cin.ignore();   
-    cout << "\n\t Digite el numero de casa: ";
-    getline(cin, Deliv[i].Direction.state); cin.ignore(); 
-   cout << "\n\t Digite su numero telefonico: ";cin.ignore();
-    cin >> Deliv[i].telephone;
+    getline(cin, Deliv[i].Direction.city);   
+    cout << "\n\t Digite su departamento: ";
+    getline(cin, Deliv[i].Direction.state); 
+   cout << "\n\t Digite su numero telefonico: ";
+    cin >> Deliv[i].telephone;cin.ignore();
     cout << "\n\tPedido: ";
    cout << "\n\t Ingrese el plato principal: "; 
-   cout << "\n\t 1> Pizza. \n\t 2> Ensalada. \n\t 3> Pasta. \n\t Opcion: ";cin.ignore();
-    cin >> Deliv[i].maindish;  
+   cout << "\n\t 1> Pizza. \n\t 2> Ensalada. \n\t 3> Pasta. \n\t Opcion: ";
+    cin >> Deliv[i].maindish;  cin.ignore();
     cout << "\n\t Escoja la entrada que desee para acompañar: "; 
-    cout << "\n\t 1> Rollitos de queso. \n\t 2> Papas fritas. \n\t Opcion: ";cin.ignore();
-    cin >> Deliv[i].mouth;
-   cout << "\n\t: Seleccione la bebida que desee: \n\t 1> Gaseosa. \n\t 2> Te. \n\t Opcion: ";cin.ignore();
-    cin >> Deliv[i].drink; 
+    cout << "\n\t 1> Rollitos de queso. \n\t 2> Papas fritas. \n\t Opcion: ";
+    cin >> Deliv[i].mouth;cin.ignore();
+   cout << "\n\t: Seleccione la bebida que desee: \n\t 1> Gaseosa. \n\t 2> Te. \n\t Opcion: ";
+    cin >> Deliv[i].drink; cin.ignore();
     cout << "\n\t Ingrese el monto: "; 
-    cin >> Deliv[i].amount;
+    cin >> Deliv[i].amount;cin.ignore();
     cout << "\n\t Seleccione el tipo de pago: \n\t 1> Efectivo. \n\t 2> Tarjeta. \n\t Opcion: "; 
-    cin >> Deliv[i].payType;  
+    cin >> Deliv[i].payType;  cin.ignore();
     }  
 }
 
-void addRest(Restdata *Rest, int size){
-    cin.ignore();
+void addRest(Restdata *Rest){
     cout << "\n\t\t\t Bienvenido al portal de ingreso!";
+        int size = 0;
+    cout << "\n\tCantidad de pedidos a ingresar: "; cin >> size;
+    cin.ignore();
+    auxR = size;
+
+    Rest = new Restdata[size];
 
     for (int i = 0; i < size; i++)
     {
    cout << "\n\t Ingrese su nombre: ";
-    getline(cin, Rest[i].name); cin.ignore();
+    getline(cin, Rest[i].name); 
    cout << "\n\t Digite la cantidad de personas acompañantes: ";
     cin >> Rest[i].Persons; cin.ignore();
    cout << "\n\t Ingrese el plato principal: "; 
@@ -151,38 +194,9 @@ void addRest(Restdata *Rest, int size){
     cin.ignore();
 }
 
-void OpMenu(int n, int opcion, int Naux1, int Naux2){
-    Deliverdata Deliv[n];
-    Restdata Rest[n];
-     if (opcion == 1)
-     {
-        cout << "\t Ingrese la cantidad de pedidos: "; cin >> n;
-        Naux1 = n;
-        Deliverdata Deliv[n];
-        addDelivery(Deliv, n);
-     }
-     else if (opcion == 2)      
-     {
-        cout << "\t Ingrese la cantidad de pedidos: "; cin >> n;
-        Naux2 = n;
-        Restdata Rest[n];   
-        addRest(Rest, n); 
-     }
-     else if(opcion == 4){
-         PrintDeliv(Deliv,Naux1);
-     }
-     else if (opcion == 5)
-     {
-         
-     }
-     else{
-         cout << "\n\tError, numero invalido\n";
-     }
-
-}
-
-void PrintDeliv(Deliverdata *Deliv, int size){
-    for (int i = 0; i < size; i++){
+void PrintDeliv(Deliverdata *Deliv){
+    
+    for (int i = 0; i < auxD; i++){
         cout << "\n\t Plato principal: ";
 
         switch(Deliv[i].maindish){
@@ -212,7 +226,7 @@ void PrintDeliv(Deliverdata *Deliv, int size){
             break;                  
         }
 
-        cout << "\n\t Bebida: ";cin.ignore();
+        cout << "\n\t Bebida: ";
 
         switch(Deliv[i].drink){
             case 1:
@@ -243,9 +257,9 @@ void PrintDeliv(Deliverdata *Deliv, int size){
     }
 }
 
-void PrintRest(Restdata *Rest, int size){
-for (int i = 0; i < size; i++){
-    cout << "\n\t Plato principal: ";cin.ignore();
+void PrintRest(Restdata *Rest){
+for (int i = 0; i < auxR; i++){
+    cout << "\n\t Plato principal: ";
 
      switch(Rest[i].maindish){
          case 1:
@@ -300,5 +314,36 @@ for (int i = 0; i < size; i++){
          default: cout << "\n\tError.";
          break;
      }    
+    }
+
 }
+
+void searchByName(Deliverdata* array, int size){
+    bool userExists = false;
+    string aux = "";
+    cout << "Nombre a buscar: "; getline(cin, aux);
+
+    for(int i = 0; i < size; i++){
+        if(aux.compare(array[i].name) == 0){
+            // Imprimir datos
+            userExists = true;
+        }
+    }
+    
+    (!userExists) ? cout << "No existe el usuario" : cout << "";
+}
+
+void searchByName(Restdata* array, int size){
+    bool userExists = false;
+    string aux = "";
+    cout << "Nombre a buscar: "; getline(cin, aux);
+
+    for(int i = 0; i < size; i++){
+        if(aux.compare(array[i].name) == 0){
+            // Imprimir datos
+            userExists = true;
+        }
+    }
+    
+    (!userExists) ? cout << "No existe el usuario" : cout << "";
 }
