@@ -9,8 +9,10 @@ using namespace std;
 enum Maindish {Pizza, Salad, Pasta};
 enum Drink {Juice, Soda, Tea};
 enum Starter {GarlicBread, FrenchFries, CheeseSticks};
+
 //Pago.
 enum PayType{Card, Cash};
+
 //Estructuras para enums
 struct MainD{
     Maindish element;
@@ -24,6 +26,7 @@ struct Starters{
     Starter element;
     Starters* next;
 };
+
 //Estructuras de datos.
 struct Address{
     int hNum;
@@ -74,12 +77,15 @@ void Print(Drinks* list);
 void Print(Starters* list);
 float PrintTotal(MainD* list);
 float PrintTotal(Drinks* list);
-float PrintTotal(Starters* list)
+float PrintTotal(Starters* list);
 
 int main(){
     //Declaracion de variables y arreglos.
     DeliveryOrder* D_Order = NULL;
     RestOrder* R_Order = NULL;
+    MainD* MDish = NULL;
+    Drinks* Drks = NULL; 
+    Starters* St = NULL;
     int option = 0;
 
     // Verificacion para iniciar sesion
@@ -94,21 +100,31 @@ int main(){
         switch(option){
             // Agregar ordenes a domicilio
             case 1:
-                D_Order = AddOrder(D_Order);
-            break;
+                D_Order = AddOrder(D_Order); break;
             // Agregar ordenes en restaurante
             case 2:
-                R_Order = AddOrder(R_Order);
-            break;
+                R_Order = AddOrder(R_Order); break;
+            // Ver ordenes a domicilio
             case 3:
-                //PrintOrder(D_Order);
-            break;
+                PrintOrder(D_Order); break;
+            //Ver ordenes en restaurante
             case 4:
-            //nada
-            break;
-            case 0:
-            // nada
-            break;
+                PrintOrder(R_Order); break;
+            //Despachar ordenes a domicilio
+            case 5: break;
+            //Despachar ordenes en restaurante
+            case 6: break;
+            //Ver tiempo promedio de espera a domicilio
+            case 7:  break;
+            //Ver tiempo promedio de espera en restaurante
+            case 8: break;
+            //Cancelar orden(Domilio o restaurante, solo admin)
+            case 9: break;
+            //Calcular total de ventas
+            case 10: break;
+            //Cambiar de usuario
+            case 11: login(); break;
+            case 12: break;
             default:
             break;
         }        
@@ -172,11 +188,12 @@ void printOptions(){
 
 DeliveryOrder* AddOrder(DeliveryOrder* list){
     DeliveryOrder* newOrder = new DeliveryOrder;
+    
     newOrder->next = NULL;
     newOrder->DeliveryMenu.orDish = NULL;
     newOrder->DeliveryMenu.orDrink = NULL;
     newOrder->DeliveryMenu.orStarter = NULL;
-    //agregar en restaurante
+    
     int aux = 0, auxSt = 0, auxDr = 0, auxMd = 0;
     char opcion;
     float time = 0;
@@ -263,12 +280,9 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
         break;
     }
 
-    cout << "Monto: "; cin >> newOrder->DeliveryMenu.total;
-    cin.ignore();
     cout << "Telefono: "; cin >> newOrder->cellphone;
     cin.ignore();
 
-    //agregar en restaurante
     newOrder->DeliveryMenu.idOrder = idOrder++;
 
     time = (auxSt * 1.10 + auxMd * 1.5 + auxDr * 1.35) + 15;
@@ -292,7 +306,7 @@ RestOrder* AddOrder(RestOrder* list){
     RestOrder* newOrder = new RestOrder;
     newOrder->next = NULL;
 
-    int aux = 0;
+    int aux = 0, auxSt = 0, auxDr = 0, auxMd = 0;
     char opcion;
     float time = 0;
     
@@ -375,6 +389,9 @@ RestOrder* AddOrder(RestOrder* list){
 
     newOrder->RestMenu.idOrder = idOrder++;
 
+    time = (auxSt * 1.10 + auxMd * 1.5 + auxDr * 1.35) + 15;
+    newOrder->RestMenu.waitTime = time; 
+
     if (!list)
         list = newOrder;
     else{
@@ -438,7 +455,7 @@ Starters* AddFood(Starters* list, Starter st){
     }
     return list;
 }
-//para mi casa sobrecargarla
+
 void PrintOrder(DeliveryOrder* list){
 
     if (!list)
@@ -467,6 +484,36 @@ void PrintOrder(DeliveryOrder* list){
             cout << list->DeliveryMenu.total;
             cout << "Tiempo de espera: ";
             cout << list->DeliveryMenu.waitTime;
+    }
+    
+}
+
+void PrintOrder(RestOrder* list){
+
+    if (!list)
+        return;
+    else{
+        cout << "\nNombre: \t" << list->RestMenu.name << endl;
+        cout << "ID: \t" << list->RestMenu.idOrder << endl;
+
+        cout << "Entradas: " << endl; 
+        Print(list->RestMenu.orStarter);
+        cout << "Plato principal: " << endl;
+        Print(list->RestMenu.orDrink);
+        cout << "Bebidas: " << endl;
+        Print(list->RestMenu.orDrink);
+        cout << "Tipo de pago: "<< endl;
+            switch (list->RestMenu.Pay)
+            {
+            case Card:
+                cout << "Tarjeta."; break;   
+            case Cash: cout << "Efectivo."; break;
+            }
+            cout << endl;
+            cout << "Total: ";
+            cout << list->RestMenu.total;
+            cout << "Tiempo de espera: ";
+            cout << list->RestMenu.waitTime;
     }
     
 }
