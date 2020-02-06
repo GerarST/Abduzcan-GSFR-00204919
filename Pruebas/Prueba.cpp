@@ -56,20 +56,32 @@ struct RestOrder{
     MenuInfo RestMenu;
     RestOrder* next;
 };
+
+struct Serve{
+    DeliveryOrder* DeliveryC;
+    RestOrder* RestC;
+};
+
 //Variables globales.
 bool Admin = false;
 int idOrder = 1;
+
 const float TotalS[] = {3.99, 4.99, 3.75};
 const float TotalM[] = {13.99, 5.55, 6.25};
 const float TotalD[] = {1.99, 0.95, 1.15};
+
 //Prototipos de funciones.
-bool login();
-void printOptions();
 DeliveryOrder* AddOrder(DeliveryOrder* list);
+DeliveryOrder* ServeOrder(DeliveryOrder* list, DeliveryOrder* next);
+DeliveryOrder* pop(DeliveryOrder* list);
 RestOrder* AddOrder(RestOrder* list);
+RestOrder* ServeOrder(RestOrder* list, RestOrder* next);
+RestOrder* pop(RestOrder* list);
 MainD* AddFood(MainD* list, Maindish md);
 Drinks* AddFood(Drinks* list, Drink d);
 Starters* AddFood(Starters* list, Starter st);
+bool login();
+void printOptions();
 void PrintOrder(DeliveryOrder* list);
 void PrintOrder(RestOrder* list);
 void Print(MainD* list);
@@ -78,15 +90,21 @@ void Print(Starters* list);
 float PrintTotal(MainD* list);
 float PrintTotal(Drinks* list);
 float PrintTotal(Starters* list);
+float PrintTimeT(DeliveryOrder* list);
+float PrintTimeT(RestOrder* list);
 
 int main(){
-    //Declaracion de variables y arreglos.
+    //Declaracion de variables.
     DeliveryOrder* D_Order = NULL;
     RestOrder* R_Order = NULL;
     MainD* MDish = NULL;
     Drinks* Drks = NULL; 
     Starters* St = NULL;
+    Serve Order;
+    Order.DeliveryC = NULL;
+    Order.RestC = NULL; 
     int option = 0;
+    
 
     // Verificacion para iniciar sesion
     if(!login())
@@ -111,13 +129,15 @@ int main(){
             case 4:
                 PrintOrder(R_Order); break;
             //Despachar ordenes a domicilio
-            case 5: break;
+            case 5: 
+                D_Order = ServeOrder(D_Order, Order.DeliveryC); pop(D_Order); break;
             //Despachar ordenes en restaurante
-            case 6: break;
+            case 6: 
+                R_Order = ServeOrder(R_Order, Order.RestC); pop(R_Order); break;
             //Ver tiempo promedio de espera a domicilio
-            case 7:  break;
+            case 7:  PrintTimeT(D_Order); break;
             //Ver tiempo promedio de espera en restaurante
-            case 8: break;
+            case 8: PrintTimeT(R_Order); break;
             //Cancelar orden(Domilio o restaurante, solo admin)
             case 9: break;
             //Calcular total de ventas
@@ -134,6 +154,7 @@ int main(){
     return 0;
 }
 
+//Inicio de sesion
 bool login(){
     string Pass = "";
     char option;
@@ -166,7 +187,7 @@ bool login(){
     }
     return false;
 }
-
+//Imprimir opciones principales
 void printOptions(){
     cout << "\t\t\t BIENVENIDO AL PORTAL DE ORDENES\n";
     cout << "\t\t\t -------------------------------\n";
@@ -186,34 +207,35 @@ void printOptions(){
     cout << "\n\t Opcion: ";
 }
 
+    //Inicio de bloque para DELIVERY...
 DeliveryOrder* AddOrder(DeliveryOrder* list){
     DeliveryOrder* newOrder = new DeliveryOrder;
     
-    newOrder->next = NULL;
     newOrder->DeliveryMenu.orDish = NULL;
     newOrder->DeliveryMenu.orDrink = NULL;
     newOrder->DeliveryMenu.orStarter = NULL;
+    newOrder->next = NULL;
     
     int aux = 0, auxSt = 0, auxDr = 0, auxMd = 0;
     char opcion;
     float time = 0;
     
-    cout << "Nombre:\t"; getline(cin, newOrder->DeliveryMenu.name);
-    cout << "Direccion" << endl;
-    cout << "Colonia:\t"; getline(cin, newOrder->DeliveryAddress.settlement);
-    cout << "Municipio:\t"; getline(cin, newOrder->DeliveryAddress.municipality);
-    cout << "Departamento:\t"; getline(cin, newOrder->DeliveryAddress.department);
-    cout << "No. casa:\t"; cin >> newOrder->DeliveryAddress.hNum;
+    cout << "\t\tNombre:\t"; getline(cin, newOrder->DeliveryMenu.name);
+    cout << "\tDireccion..." << endl;
+    cout << "\t\tColonia:\t"; getline(cin, newOrder->DeliveryAddress.settlement);
+    cout << "\t\tMunicipio:\t"; getline(cin, newOrder->DeliveryAddress.municipality);
+    cout << "\t\tDepartamento:\t"; getline(cin, newOrder->DeliveryAddress.department);
+    cout << "\t\tNo. casa:\t"; cin >> newOrder->DeliveryAddress.hNum;
     cin.ignore();
 
         do{
 
-            cout << "Entrada" << endl;
-            cout << "1 - Pan con ajo" << endl;
-            cout << "2 - Papas Fritas" << endl;
-            cout << "3 - Palitos de queso" << endl;
-            cout << "4 - Salir.\n";
-            cout << "Su opcion:\t"; cin >> aux;
+            cout << "\n\tEntrada" << endl;
+            cout << "\t1 - Pan con ajo" << endl;
+            cout << "\t2 - Papas Fritas" << endl;
+            cout << "\t3 - Palitos de queso" << endl;
+            cout << "\t4 - Salir.\n";
+            cout << "\tSu opcion:\t"; cin >> aux;
             cin.ignore();
 
             if (aux != 4)
@@ -226,12 +248,12 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
         }while(aux != 4);
          
         do{
-            cout << "Plato principal" << endl;
-            cout << "1 - Pizza" << endl;
-            cout << "2 - Pasta" << endl;
-            cout << "3 - Ensalada" << endl;
-            cout << "4 - Salir.\n";
-            cout << "Su opcion:\t"; cin >> aux;
+            cout << "\n\tPlato principal" << endl;
+            cout << "\t1 - Pizza" << endl;
+            cout << "\t2 - Pasta" << endl;
+            cout << "\t3 - Ensalada" << endl;
+            cout << "\t4 - Salir.\n";
+            cout << "\tSu opcion:\t"; cin >> aux;
             cin.ignore();
             
             if (aux != 4)
@@ -244,12 +266,12 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
         }while(aux != 4);
 
         do{
-            cout << "Bebida" << endl;
-            cout << "1 - Jugo" << endl;
-            cout << "2 - Soda" << endl;
-            cout << "3 - Te helado" << endl;
-            cout << "4 - Salir.\n";
-            cout << "Su opcion:\t"; cin >> aux;
+            cout << "\n\tBebida" << endl;
+            cout << "\t1 - Jugo" << endl;
+            cout << "\t2 - Soda" << endl;
+            cout << "\t3 - Te helado" << endl;
+            cout << "\t4 - Salir.\n";
+            cout << "\tSu opcion:\t"; cin >> aux;
             cin.ignore();
 
             
@@ -263,10 +285,10 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
         }while(aux != 4);
 
         
-    cout << "Tipo de pago" << endl;
-    cout << "1 - Tarjeta" << endl;
-    cout << "2 - Efectivo" << endl;
-    cout << "Su opcion:\t"; cin >> aux;
+    cout << "\n\tTipo de pago" << endl;
+    cout << "\t1 - Tarjeta" << endl;
+    cout << "\t2 - Efectivo" << endl;
+    cout << "\tSu opcion:\t"; cin >> aux;
     cin.ignore();
 
     switch (aux){
@@ -280,7 +302,7 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
         break;
     }
 
-    cout << "Telefono: "; cin >> newOrder->cellphone;
+    cout << "\n\tTelefono: "; cin >> newOrder->cellphone;
     cin.ignore();
 
     newOrder->DeliveryMenu.idOrder = idOrder++;
@@ -302,6 +324,68 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
     return list;
 }
 
+DeliveryOrder* ServeOrder(DeliveryOrder* list, DeliveryOrder* DeliveryC){
+    DeliveryOrder* newOrder = new DeliveryOrder;
+
+    newOrder->DeliveryMenu = list->DeliveryMenu;
+    newOrder->DeliveryAddress = list->DeliveryAddress;
+    newOrder->cellphone = list->cellphone;
+
+    newOrder->next = DeliveryC;
+    DeliveryC = newOrder;
+
+    return DeliveryC;
+}
+
+DeliveryOrder* pop(DeliveryOrder* list){
+    if(!list)
+        return NULL;
+    else
+        return list->next;
+}
+
+void PrintOrder(DeliveryOrder* list){
+
+    if (!list)
+        return;
+    else{
+        cout << "\nNombre: \t" << list->DeliveryMenu.name << endl;
+        cout << "ID: \t" << list->DeliveryMenu.idOrder << endl;
+        cout << "Direccion... \t" << endl;
+        cout << list->DeliveryAddress.department << ", " << list->DeliveryAddress.municipality << ", " << list->DeliveryAddress.settlement << ", " << list->DeliveryAddress.hNum << endl;
+
+        cout << "Entradas: " << endl; 
+        Print(list->DeliveryMenu.orStarter);
+        cout << "Plato principal: " << endl;
+        Print(list->DeliveryMenu.orDrink);
+        cout << "Bebidas: " << endl;
+        Print(list->DeliveryMenu.orDrink);
+        cout << "Tipo de pago: "<< endl;
+            switch (list->DeliveryMenu.Pay)
+            {
+            case Card:
+                cout << "Tarjeta."; break;   
+            case Cash: cout << "Efectivo."; break;
+            }
+            cout << endl;
+            cout << "Total: ";
+            cout << list->DeliveryMenu.total;
+            cout << "Tiempo de espera: ";
+            cout << list->DeliveryMenu.waitTime;
+    }
+    
+}
+
+float PrintTimeT(DeliveryOrder* list){
+    if(!list)
+        return 0;
+    else{
+        return list->DeliveryMenu.waitTime + PrintTimeT(list->next);
+    }
+}
+//Fin de bloque para DELIVERY||
+
+    //Inicio de bloque para RESTAURANT...
 RestOrder* AddOrder(RestOrder* list){
     RestOrder* newOrder = new RestOrder;
     newOrder->next = NULL;
@@ -311,7 +395,7 @@ RestOrder* AddOrder(RestOrder* list){
     float time = 0;
     
     cout << "Nombre:\t"; getline(cin, newOrder->RestMenu.name);
-    cout << "Personas por mesa:\t"; cin >> newOrder->Persons;
+    cout << "Personas por mesa:\t"; cin >> newOrder->Persons; cin.ignore();
         do{
             cout << "Entrada" << endl;
             cout << "1 - Pan con ajo" << endl;
@@ -384,13 +468,13 @@ RestOrder* AddOrder(RestOrder* list){
         break;
     }
 
-    cout << "Monto: "; cin >> newOrder->RestMenu.total;
-    cin.ignore();
-
     newOrder->RestMenu.idOrder = idOrder++;
 
     time = (auxSt * 1.10 + auxMd * 1.5 + auxDr * 1.35) + 15;
     newOrder->RestMenu.waitTime = time; 
+    
+    newOrder->RestMenu.total = PrintTotal(list->RestMenu.orDish) + PrintTotal(list->RestMenu.orDrink) + PrintTotal(list->RestMenu.orStarter);
+
 
     if (!list)
         list = newOrder;
@@ -404,6 +488,66 @@ RestOrder* AddOrder(RestOrder* list){
     return list;
 }
 
+RestOrder* ServeOrder(RestOrder* list, RestOrder* RestC){
+    RestOrder* newOrder = new RestOrder;
+
+    newOrder->RestMenu = list->RestMenu;
+    newOrder->Persons = list->Persons;
+
+    newOrder->next = RestC;
+    RestC = newOrder;
+
+    return RestC;
+}
+
+RestOrder* pop(RestOrder* list){
+    if(!list)
+        return NULL;
+    else
+        return list->next;
+}
+
+void PrintOrder(RestOrder* list){
+
+    if (!list)
+        return;
+    else{
+        cout << "\nNombre: \t" << list->RestMenu.name << endl;
+        cout << "ID: \t" << list->RestMenu.idOrder << endl;
+
+        cout << "Entradas: " << endl; 
+        Print(list->RestMenu.orStarter);
+        cout << "Plato principal: " << endl;
+        Print(list->RestMenu.orDrink);
+        cout << "Bebidas: " << endl;
+        Print(list->RestMenu.orDrink);
+        cout << "Tipo de pago: "<< endl;
+            switch (list->RestMenu.Pay)
+            {
+            case Card:
+                cout << "Tarjeta."; break;   
+            case Cash: cout << "Efectivo."; break;
+            }
+            cout << endl;
+            cout << "Total: ";
+            cout << list->RestMenu.total;
+            cout << "Tiempo de espera... ";
+            cout << list->RestMenu.waitTime;
+            cout << endl;
+    }
+    
+}
+
+float PrintTimeT(RestOrder* list){
+    if(!list)
+        return 0;
+    else{
+        return list->RestMenu.waitTime + PrintTimeT(list->next);
+    }
+}
+//Fin de bloque para RESTAURANT||
+
+    //Funciones Divide and Conquer...
 MainD* AddFood(MainD* list, Maindish md){
     MainD* newFood = new MainD;
     newFood->element = md;
@@ -455,69 +599,9 @@ Starters* AddFood(Starters* list, Starter st){
     }
     return list;
 }
+//Funciones Divide and Conquer||
 
-void PrintOrder(DeliveryOrder* list){
-
-    if (!list)
-        return;
-    else{
-        cout << "\nNombre: \t" << list->DeliveryMenu.name << endl;
-        cout << "ID: \t" << list->DeliveryMenu.idOrder << endl;
-        cout << "Direccion... \t" << endl;
-        cout << list->DeliveryAddress.department << ", " << list->DeliveryAddress.municipality << ", " << list->DeliveryAddress.settlement << ", " << list->DeliveryAddress.hNum << endl;
-
-        cout << "Entradas: " << endl; 
-        Print(list->DeliveryMenu.orStarter);
-        cout << "Plato principal: " << endl;
-        Print(list->DeliveryMenu.orDrink);
-        cout << "Bebidas: " << endl;
-        Print(list->DeliveryMenu.orDrink);
-        cout << "Tipo de pago: "<< endl;
-            switch (list->DeliveryMenu.Pay)
-            {
-            case Card:
-                cout << "Tarjeta."; break;   
-            case Cash: cout << "Efectivo."; break;
-            }
-            cout << endl;
-            cout << "Total: ";
-            cout << list->DeliveryMenu.total;
-            cout << "Tiempo de espera: ";
-            cout << list->DeliveryMenu.waitTime;
-    }
-    
-}
-
-void PrintOrder(RestOrder* list){
-
-    if (!list)
-        return;
-    else{
-        cout << "\nNombre: \t" << list->RestMenu.name << endl;
-        cout << "ID: \t" << list->RestMenu.idOrder << endl;
-
-        cout << "Entradas: " << endl; 
-        Print(list->RestMenu.orStarter);
-        cout << "Plato principal: " << endl;
-        Print(list->RestMenu.orDrink);
-        cout << "Bebidas: " << endl;
-        Print(list->RestMenu.orDrink);
-        cout << "Tipo de pago: "<< endl;
-            switch (list->RestMenu.Pay)
-            {
-            case Card:
-                cout << "Tarjeta."; break;   
-            case Cash: cout << "Efectivo."; break;
-            }
-            cout << endl;
-            cout << "Total: ";
-            cout << list->RestMenu.total;
-            cout << "Tiempo de espera: ";
-            cout << list->RestMenu.waitTime;
-    }
-    
-}
-
+    //Funciones Print...
 void Print(MainD* list){
     if(!list)
         return;
