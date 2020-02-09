@@ -6,9 +6,9 @@ using namespace std;
 #define PASSWORD "cin.clear"
 
 //Comida.
-enum Maindish {Pizza, Salad, Pasta};
-enum Drink {Juice, Soda, Tea};
-enum Starter {GarlicBread, FrenchFries, CheeseSticks};
+enum Maindish {Pizza, Pasta, Lasagna};
+enum Drink {Beer, Soda, Tea};
+enum Starter {GarlicBread, PizzaRolls, CheeseSticks};
 
 //Pago.
 enum PayType{Card, Cash};
@@ -35,9 +35,9 @@ struct Address{
 
 struct MenuInfo{
     string name;
-    MainD *orDish;
-    Drinks *orDrink;
-    Starters *orStarter;
+    MainD* orDish;
+    Drinks* orDrink;
+    Starters* orStarter;
     PayType Pay;
     int idOrder;
     float total;
@@ -66,9 +66,9 @@ struct Serve{
 bool Admin = false;
 int idOrder = 1;
 
-const float TotalS[] = {3.99, 4.99, 3.75};
-const float TotalM[] = {13.99, 5.55, 6.25};
-const float TotalD[] = {1.99, 0.95, 1.15};
+const float PriceS[] = {3.99, 4.99, 3.75};
+const float PriceM[] = {13.99, 5.55, 6.25};
+const float PriceD[] = {1.99, 0.95, 1.15};
 
 //Prototipos de funciones.
 DeliveryOrder* AddOrder(DeliveryOrder* list);
@@ -84,6 +84,8 @@ bool login();
 void printOptions();
 void PrintOrder(DeliveryOrder* list);
 void PrintOrder(RestOrder* list);
+void DeleteOr(DeliveryOrder** list, int ID);
+void DeleteOr(RestOrder** list, int ID);
 void Print(MainD* list);
 void Print(Drinks* list);
 void Print(Starters* list);
@@ -92,6 +94,7 @@ float PrintTotal(Drinks* list);
 float PrintTotal(Starters* list);
 float PrintTimeT(DeliveryOrder* list);
 float PrintTimeT(RestOrder* list);
+
 
 int main(){
     //Declaracion de variables.
@@ -139,12 +142,24 @@ int main(){
             //Ver tiempo promedio de espera en restaurante
             case 8: PrintTimeT(R_Order); break;
             //Cancelar orden(Domilio o restaurante, solo admin)
-            case 9: break;
+            case 9: 
+                if(Admin){
+                    if(R_Order->RestMenu.idOrder == idOrder || D_Order->DeliveryMenu.idOrder == idOrder){
+                        if(!R_Order && !D_Order)
+                            cout << "\n\tLa lista está vacía!";
+                        else{
+                            DeleteOr(&R_Order, idOrder); DeleteOr(&D_Order, idOrder);
+                        }   
+                    }
+                }
+                else
+                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!";
+                break;
             //Calcular total de ventas
             case 10: break;
             //Cambiar de usuario
             case 11: login(); break;
-            case 12: break;
+            case 12: return 0; break;
             default:
             break;
         }        
@@ -220,7 +235,7 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
     char opcion;
     float time = 0;
     
-    cout << "\t\tNombre:\t"; getline(cin, newOrder->DeliveryMenu.name);
+    cout << "\t\tNombre completo:\t"; getline(cin, newOrder->DeliveryMenu.name);
     cout << "\tDireccion..." << endl;
     cout << "\t\tColonia:\t"; getline(cin, newOrder->DeliveryAddress.settlement);
     cout << "\t\tMunicipio:\t"; getline(cin, newOrder->DeliveryAddress.municipality);
@@ -251,7 +266,7 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
             cout << "\n\tPlato principal" << endl;
             cout << "\t1 - Pizza" << endl;
             cout << "\t2 - Pasta" << endl;
-            cout << "\t3 - Ensalada" << endl;
+            cout << "\t3 - EnLasagnaa" << endl;
             cout << "\t4 - Salir.\n";
             cout << "\tSu opcion:\t"; cin >> aux;
             cin.ignore();
@@ -273,7 +288,6 @@ DeliveryOrder* AddOrder(DeliveryOrder* list){
             cout << "\t4 - Salir.\n";
             cout << "\tSu opcion:\t"; cin >> aux;
             cin.ignore();
-
             
             if (aux != 4)
             {
@@ -344,34 +358,49 @@ DeliveryOrder* pop(DeliveryOrder* list){
         return list->next;
 }
 
+void DeleteOr(DeliveryOrder** list, int ID){
+    if(*list){
+        if((*(*list)).DeliveryMenu.idOrder == ID){
+            (*list) = (*(*list)).next;
+        }
+    }
+    else
+        DeleteOr(&(*(*list)).next, ID);
+}
+
 void PrintOrder(DeliveryOrder* list){
 
     if (!list)
         return;
     else{
-        cout << "\nNombre: \t" << list->DeliveryMenu.name << endl;
-        cout << "ID: \t" << list->DeliveryMenu.idOrder << endl;
-        cout << "Direccion... \t" << endl;
+        cout << "\n\t\t\tPIZZERIA ABDUZCAN EL SALVADOR.\n";
+        cout << "\n\t\t\t   Av. LA REVOLUCION Y BOULVEVARD\n\t\t\tDEL HIPODROMO. NO. 222, SAN SALVADOR\n Telefono: 2790-7653";
+        cout << "\tNombre: \t" << list->DeliveryMenu.name << endl;
+        cout << "\tID: \t" << list->DeliveryMenu.idOrder << endl;
+        cout << "\tDireccion... \t" << endl;
         cout << list->DeliveryAddress.department << ", " << list->DeliveryAddress.municipality << ", " << list->DeliveryAddress.settlement << ", " << list->DeliveryAddress.hNum << endl;
-
-        cout << "Entradas: " << endl; 
+        
+        cout << "\n-----------------------------\n";
+        cout << "\tEntradas: " << endl; 
         Print(list->DeliveryMenu.orStarter);
-        cout << "Plato principal: " << endl;
+        cout << "\tPlato principal: " << endl;
         Print(list->DeliveryMenu.orDrink);
-        cout << "Bebidas: " << endl;
+        cout << "\tBebidas: " << endl;
         Print(list->DeliveryMenu.orDrink);
-        cout << "Tipo de pago: "<< endl;
+        cout << "\n-----------------------------\n";
+
+        cout << "\tTipo de pago: "<< endl;
             switch (list->DeliveryMenu.Pay)
             {
-            case Card:
-                cout << "Tarjeta."; break;   
-            case Cash: cout << "Efectivo."; break;
+            case Card: cout << "\tTarjeta.";  break;   
+            case Cash: cout << "\tEfectivo."; break;
             }
-            cout << endl;
-            cout << "Total: ";
-            cout << list->DeliveryMenu.total;
-            cout << "Tiempo de espera: ";
-            cout << list->DeliveryMenu.waitTime;
+        cout << endl;
+        cout << "\tSubTotal General: \t";
+        cout << list->DeliveryMenu.total;
+        cout << "\n\tTiempo de espera: ";
+        cout << list->DeliveryMenu.waitTime;
+        cout << "\n-----------------------------\n";
     }
     
 }
@@ -394,7 +423,7 @@ RestOrder* AddOrder(RestOrder* list){
     char opcion;
     float time = 0;
     
-    cout << "Nombre:\t"; getline(cin, newOrder->RestMenu.name);
+    cout << "Nombre completo:\t"; getline(cin, newOrder->RestMenu.name);
     cout << "Personas por mesa:\t"; cin >> newOrder->Persons; cin.ignore();
         do{
             cout << "Entrada" << endl;
@@ -417,7 +446,7 @@ RestOrder* AddOrder(RestOrder* list){
             cout << "Plato principal" << endl;
             cout << "1 - Pizza" << endl;
             cout << "2 - Pasta" << endl;
-            cout << "3 - Ensalada" << endl;
+            cout << "3 - EnLasagnaa" << endl;
             cout << "4 - Salir.\n";
             cout << "Su opcion:\t"; cin >> aux;
             cin.ignore();
@@ -505,6 +534,16 @@ RestOrder* pop(RestOrder* list){
         return NULL;
     else
         return list->next;
+}
+
+void DeleteOr(RestOrder** list, int ID){
+    if(*list){
+        if((*(*list)).RestMenu.idOrder == ID){
+            (*list) = (*(*list)).next;
+        }
+    }
+    else
+        DeleteOr(&(*(*list)).next, ID);
 }
 
 void PrintOrder(RestOrder* list){
@@ -610,8 +649,8 @@ void Print(MainD* list){
         {
         case Pizza:
             cout << "Pizza."; break;
-        case Salad:
-            cout << "Ensalada."; break;
+        case Lasagna:
+            cout << "EnLasagnaa."; break;
         case Pasta:
             cout << "Pasta."; break;
         }
@@ -626,7 +665,7 @@ void Print(Drinks* list){
     else{
         switch (list->element)
         {
-        case Juice:
+        case Beer:
             cout << "Jugo."; break;
         case Soda:
             cout << "Soda."; break;
@@ -646,7 +685,7 @@ void Print(Starters* list){
         {
         case GarlicBread:
             cout << "Pan con ajo."; break;
-        case FrenchFries:
+        case PizzaRolls:
             cout << "Papas fritas."; break;
         case CheeseSticks:
             cout << "Palitos de queso."; break;
@@ -660,7 +699,7 @@ float PrintTotal(MainD* list){
     if(!list)
         return 0;
     else{
-        return TotalM[int(list->element)] + PrintTotal(list->next);
+        return PriceM[int(list->element)] + PrintTotal(list->next); 
     }
 }
 
@@ -668,7 +707,7 @@ float PrintTotal(Drinks* list){
     if(!list)
         return 0;
     else{
-        return TotalD[int(list->element)] + PrintTotal(list->next);
+        return PriceD[int(list->element)] + PrintTotal(list->next);
     }
 }
 
@@ -676,7 +715,7 @@ float PrintTotal(Starters* list){
     if(!list)
         return 0;
     else{
-        return TotalS[int(list->element)] + PrintTotal(list->next);
+        return PriceS[int(list->element)] + PrintTotal(list->next);
     }
     
 }
