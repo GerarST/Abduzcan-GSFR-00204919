@@ -106,7 +106,7 @@ int main(){
     Serve Order;
     Order.DeliveryC = NULL;
     Order.RestC = NULL; 
-    int option = 0;
+    int option = 0, id = 0;
     
 
     // Verificacion para iniciar sesion
@@ -127,8 +127,8 @@ int main(){
                 R_Order = AddOrder(R_Order); break;
             // Ver ordenes a domicilio
             case 3:
-                if(D_Order == NULL){
-                    cout << "\n\t\tNo hay ordenes que mostrar!\n";
+                if(!D_Order){
+                    cout << "\n\tNo hay ordenes que mostrar!\n\n"; break;
                 }
                 else
                    PrintOrder(D_Order); break;
@@ -141,27 +141,48 @@ int main(){
                    PrintOrder(R_Order); break;
             //Despachar ordenes a domicilio
             case 5: 
-                if(!D_Order){
-                    cout << "No hay ordenes para despachar!";
-                    break;
-                } 
-                else 
-                    D_Order = ServeOrder(D_Order, Order.DeliveryC); pop(D_Order); break;
+                if(Admin){
+                    if(!D_Order){
+                        cout << "\n\tNo hay ordenes para despachar!\n\n";
+                        break;
+                    } 
+                    else{ 
+                        D_Order = ServeOrder(D_Order, Order.DeliveryC); break;
+                    }
+                }
+                else
+                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!";
+                break;
             //Despachar ordenes en restaurante
-            case 6: 
-                R_Order = ServeOrder(R_Order, Order.RestC); pop(R_Order); break;
+            case 6:
+                if(Admin){
+                    if(!R_Order){
+                        cout << "\n\tNo hay ordenes para despachar!\n\n";
+                        break;
+                    } 
+                    else{ 
+                        R_Order = ServeOrder(R_Order, Order.RestC); break;
+                    }
+                }
+                else
+                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!";
+                break; 
             //Ver tiempo promedio de espera a domicilio
-            case 7:  PrintTimeT(D_Order); break;
+            case 7:  cout << "\n\t\tEl tiempo promedio es de " << PrintTimeT(D_Order) << " minutos."; break;
             //Ver tiempo promedio de espera en restaurante
-            case 8: PrintTimeT(R_Order); break;
+            case 8: cout << "\n\t\tEl tiempo promedio es de " << PrintTimeT(R_Order) << " minutos."; break;
             //Cancelar orden(Domilio o restaurante, solo admin)
             case 9: 
                 if(Admin){
-                    if(R_Order->RestMenu.idOrder == idOrder || D_Order->DeliveryMenu.idOrder == idOrder){
-                        if(!R_Order && !D_Order)
+                    cout << "\n\t\tDigite el ID de la orden: ";
+                    cin >> id; cin.ignore();
+                    
+                    if(R_Order->RestMenu.idOrder == id || D_Order->DeliveryMenu.idOrder == id){
+                        if(!R_Order || !D_Order){
                             cout << "\n\tLa lista está vacía!";
+                        }
                         else{
-                            DeleteOr(&R_Order, idOrder); DeleteOr(&D_Order, idOrder);
+                            DeleteOr(&R_Order, id); DeleteOr(&D_Order, id);
                         }   
                     }
                 }
@@ -173,7 +194,7 @@ int main(){
             //Cambiar de usuario
             case 11: login(); break;
             case 12: return 0; break;
-            default:
+            default: "Error!";
             break;
         }        
 
@@ -372,7 +393,7 @@ DeliveryOrder* ServeOrder(DeliveryOrder* list, DeliveryOrder* DeliveryCopy){
 
     newOrder->next = DeliveryCopy;
     DeliveryCopy = newOrder;
-    return DeliveryCopy;
+    return pop(list);
     
 }
 
@@ -423,7 +444,7 @@ void PrintOrder(DeliveryOrder* list){
                 }
             cout << endl;
             cout << "\tSubTotal General:\t$";
-            cout << list->DeliveryMenu.total;
+            cout << (list->DeliveryMenu.total)* 1.13 << " con IVA incluido.";
             cout << "\n\tTiempo de espera:\t";
             cout << list->DeliveryMenu.waitTime << " minutos.";
             cout << "\n-------------------------------------------------\n\n\n";
@@ -569,7 +590,7 @@ RestOrder* ServeOrder(RestOrder* list, RestOrder* RestC){
     newOrder->next = RestC;
     RestC = newOrder;
 
-    return RestC;
+    return pop(list);
 }
 
 RestOrder* pop(RestOrder* list){
@@ -621,6 +642,7 @@ void PrintOrder(RestOrder* list){
         cout << "\n\tTiempo de espera:\t";
         cout << list->RestMenu.waitTime << " minutos.";
         cout << "\n-------------------------------------------------\n\n\n";
+        PrintOrder(list->next);
     }
     
 }
