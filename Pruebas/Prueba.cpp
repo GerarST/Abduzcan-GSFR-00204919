@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <iomanip>
 using namespace std;
 
 #define PASSWORD "cin.clear"
@@ -94,6 +95,8 @@ float PrintTotal(Drinks* list);
 float PrintTotal(Starters* list);
 float PrintTimeT(DeliveryOrder* list);
 float PrintTimeT(RestOrder* list);
+float TotalSales(DeliveryOrder* list);
+float TotalSales(RestOrder* list);
 
 
 int main(){
@@ -106,7 +109,7 @@ int main(){
     Serve Order;
     Order.DeliveryC = NULL;
     Order.RestC = NULL; 
-    int option = 0, id = 0;
+    int option = 0, id = 0, aux = 0;
     
 
     // Verificacion para iniciar sesion
@@ -128,71 +131,167 @@ int main(){
             // Ver ordenes a domicilio
             case 3:
                 if(!D_Order){
-                    cout << "\n\tNo hay ordenes que mostrar!\n\n"; break;
+                    
+                    cout << "\n-------------------------------------------------\n";
+                    cout << "\n\tNo hay ordenes que mostrar!\n"; 
+                    cout << "\n-------------------------------------------------\n";
+                    break;
+
                 }
                 else
-                   PrintOrder(D_Order); break;
+                   PrintOrder(D_Order); 
+                break;
             //Ver ordenes en restaurante
             case 4:
-                if(!D_Order){
-                    cout << "No hay ordenes!";
+                if(!R_Order){
+                    cout << "\n-------------------------------------------------\n";
+                    cout << "\n\tNo hay ordenes que mostrar!\n";
+                    cout << "\n-------------------------------------------------\n";
+                    break;
                 }
                 else
-                   PrintOrder(R_Order); break;
+                   PrintOrder(R_Order); 
+                break;
             //Despachar ordenes a domicilio
             case 5: 
                 if(Admin){
                     if(!D_Order){
-                        cout << "\n\tNo hay ordenes para despachar!\n\n";
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\n\tNo hay ordenes para despachar!\n";
+                        cout << "\n-------------------------------------------------\n";
                         break;
                     } 
                     else{ 
-                        D_Order = ServeOrder(D_Order, Order.DeliveryC); break;
+                        D_Order = ServeOrder(D_Order, Order.DeliveryC); 
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\n\tOrden despachada exitosamente!\n";
+                        cout << "\n-------------------------------------------------\n";
+                        break;
                     }
                 }
                 else
-                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!";
+                    cout << "\n-------------------------------------------------\n";
+                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!\n";
+                    cout << "\n-------------------------------------------------\n";
                 break;
             //Despachar ordenes en restaurante
             case 6:
                 if(Admin){
                     if(!R_Order){
-                        cout << "\n\tNo hay ordenes para despachar!\n\n";
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\n\tNo hay ordenes para despachar!\n";
+                        cout << "\n-------------------------------------------------\n";
                         break;
                     } 
                     else{ 
-                        R_Order = ServeOrder(R_Order, Order.RestC); break;
+                        R_Order = ServeOrder(R_Order, Order.RestC);
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\n\tOrden despachada exitosamente!\n";
+                        cout << "\n-------------------------------------------------\n"; 
+                        break;
                     }
                 }
                 else
-                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!";
+                    cout << "\n-------------------------------------------------\n";
+                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!\n";
+                    cout << "\n-------------------------------------------------\n";
                 break; 
             //Ver tiempo promedio de espera a domicilio
-            case 7:  cout << "\n\t\tEl tiempo promedio es de " << PrintTimeT(D_Order) << " minutos."; break;
+            case 7:
+                cout << "\n-------------------------------------------------\n"; 
+                cout << "\n\tEl tiempo promedio es de " << PrintTimeT(D_Order) << " minutos.\n";
+                cout << "\n-------------------------------------------------\n";
+            break;
             //Ver tiempo promedio de espera en restaurante
-            case 8: cout << "\n\t\tEl tiempo promedio es de " << PrintTimeT(R_Order) << " minutos."; break;
+            case 8:
+                cout << "\n-------------------------------------------------\n";
+                cout << "\n\tEl tiempo promedio es de " << PrintTimeT(R_Order) << " minutos.\n";
+                cout << "\n-------------------------------------------------\n"; 
+            break;
             //Cancelar orden(Domilio o restaurante, solo admin)
-            case 9: 
+            case 9:
                 if(Admin){
-                    cout << "\n\t\tDigite el ID de la orden: ";
-                    cin >> id; cin.ignore();
-                    
-                    if(R_Order->RestMenu.idOrder == id || D_Order->DeliveryMenu.idOrder == id){
-                        if(!R_Order || !D_Order){
-                            cout << "\n\tLa lista está vacía!";
+                    cout << "\n-------------------------------------------------\n";
+                    cout << "\n\t\tDesea cancelar la orden de:\n\t\t1> Domicilio \n\t\t2> Restaurante\n\t\tOpcion: ";
+                    cin >> aux; cin.ignore();
+
+                        if(aux == 1){
+                            if(!D_Order){
+                                cout << "\n-------------------------------------------------\n";
+                                cout << "\n\t\tLa lista está vacía!\n";
+                                cout << "\n-------------------------------------------------\n";
+                                }
+                            else {
+                                cout << "\n\t\tDigite el ID de la orden: ";
+                                cin >> id; cin.ignore();
+                                    if(D_Order->DeliveryMenu.idOrder == id)
+                                        DeleteOr(&D_Order, id);
+
+                                cout << "\n-------------------------------------------------\n";
+                                cout << "\n\t\tOrden eliminada exitosamente!\n";
+                                cout << "\n-------------------------------------------------\n";
+                            }
                         }
-                        else{
-                            DeleteOr(&R_Order, id); DeleteOr(&D_Order, id);
-                        }   
-                    }
+                        else if (aux == 2){
+                            if(!R_Order){
+                                cout << "\n-------------------------------------------------\n";
+                                cout << "\n\t\tLa lista está vacía!\n";
+                                cout << "\n-------------------------------------------------\n";
+                                }
+                            else {
+                                cout << "\n\t\tDigite el ID de la orden: ";
+                                cin >> id; cin.ignore();
+                                    if(R_Order->RestMenu.idOrder == id)
+                                        DeleteOr(&R_Order, id);
+
+                                cout << "\n-------------------------------------------------\n";
+                                cout << "\n\t\tOrden eliminada exitosamente!\n";
+                                cout << "\n-------------------------------------------------\n";
+                            }
+                        }
                 }
-                else
-                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!";
+                else{
+                    cout << "\n-------------------------------------------------\n";
+                    cout << "\n\t\tNo tiene los permisos requeridos \n\t\tpara realizar esta accion!\n";
+                    cout << "\n-------------------------------------------------\n";
+                }
                 break;
-            //Calcular total de ventas
-            case 10: break;
+            //Ver total de ventas
+            case 10: 
+                    cout << "\n\t\t---------------------------\n";
+                    cout << "\t\tDesea calcular el total de:\n\t\t1> Domicilio \n\t\t2> Restaurante\n\t\tOpcion: ";
+                    cin >> aux; cin.ignore();
+                    if(aux == 1){
+                        if(TotalSales(D_Order) == 0){
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\t\tNo hay ventas que calcular!";
+                        cout << "\n-------------------------------------------------\n";
+                        }else{
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\nEl total de ventas es de: " << (TotalSales(D_Order))* 1.13 << " con IVA incluido.";
+                        cout << "\n-------------------------------------------------\n";
+                        }
+                    }
+                    else if (aux == 2){
+                        if(TotalSales(R_Order) == 0){
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\t\tNo hay ventas que calcular!";
+                        cout << "\n-------------------------------------------------\n";
+                        }else{
+                        cout << "\n-------------------------------------------------\n";
+                        cout << "\nEl total de ventas es de: " << (TotalSales(R_Order))* 1.13 << " con IVA incluido.";
+                        cout << "\n-------------------------------------------------\n";
+                        }
+                    }
+                        else{
+                            cout << "\n-------------------------------------------------\n";
+                            cout << "\n\t\tOpcion invalida!\n";
+                            cout << "\n-------------------------------------------------\n";
+                        }
+                break;
             //Cambiar de usuario
             case 11: login(); break;
+            //Salir
             case 12: return 0; break;
             default: "Error!";
             break;
@@ -207,23 +306,24 @@ int main(){
 bool login(){
     string Pass = "";
     char option;
-    cout << "\n\t\t\tINICIO DE SESION\n";
-    cout << "\t\t\t----------------\n";
-    cout << "\tA - Administrador\n";
-    cout << "\tE - Empleado\n";
-    cout << "\tSu opcion:\t"; cin >> option;
+
+    cout << "\n\t\t\t\t   INICIO DE SESION\n";
+    cout << "\t\t\t\t<<<---------------->>>\n";
+    cout << "\t\t\tA . Administrador\n";
+    cout << "\t\t\tE . Empleado\n";
+    cout << "\t\t\tSu opcion:\t"; cin >> option;
 
     switch(option){
         case 'a':
         case 'A':
-            cout << "Contraseña de Administrador: "; cin >> Pass;
-
+            cout << "\n\t\t\tContraseña de Administrador: "; cin >> Pass;
+            cout << endl;
             if(Pass.compare(PASSWORD) == 0){
                 Admin = true;
                 return true;
             }
             else{
-                cout << "Contraseña incorrecta" << endl;
+                cout << "\n\tContraseña incorrecta" << endl;
             }
             break;
         case 'e':
@@ -238,7 +338,7 @@ bool login(){
 }
 //Imprimir opciones principales
 void printOptions(){
-    cout << "\t\t\t BIENVENIDO AL PORTAL DE ORDENES\n";
+    cout << "\n\t\t\t BIENVENIDO AL PORTAL DE ORDENES\n";
     cout << "\t\t\t -------------------------------\n";
     cout << "\n\t\t\t <-------------Menu------------->";
     cout << "\n\t 1> Agregar 1 pedido a domicilio";
@@ -444,7 +544,7 @@ void PrintOrder(DeliveryOrder* list){
                 }
             cout << endl;
             cout << "\tSubTotal General:\t$";
-            cout << (list->DeliveryMenu.total)* 1.13 << " con IVA incluido.";
+            cout << list->DeliveryMenu.total;
             cout << "\n\tTiempo de espera:\t";
             cout << list->DeliveryMenu.waitTime << " minutos.";
             cout << "\n-------------------------------------------------\n\n\n";
@@ -564,7 +664,7 @@ RestOrder* AddOrder(RestOrder* list){
 
     newOrder->RestMenu.idOrder = idOrder++;
 
-    time = (auxSt * 1.10 + auxMd * 1.5 + auxDr * 1.35) + 15;
+    time = (auxSt * 1.10 + auxMd * 1.5 + auxDr * 1.35);
     newOrder->RestMenu.waitTime = time;  
 
     newOrder->RestMenu.total = PrintTotal(newOrder->RestMenu.orDish) + PrintTotal(newOrder->RestMenu.orDrink) + PrintTotal(newOrder->RestMenu.orStarter);
@@ -621,6 +721,7 @@ void PrintOrder(RestOrder* list){
         cout << "\n-------------------------------------------------\n";
         cout << "\tNombre:\t\t" << list->RestMenu.name << endl;
         cout << "\tID:\t\t" << list->RestMenu.idOrder << endl;
+        cout << "\tAcompaniantes:\t\t" << list->Persons << endl;
         cout << "\n-------------------------------------------------\n";
         cout << "\tEntradas:"; 
         Print(list->RestMenu.orStarter);
@@ -788,4 +889,18 @@ float PrintTotal(Starters* list){
         return PriceS[int(list->element)] + PrintTotal(list->next);
     }
     
+}
+
+float TotalSales(DeliveryOrder* list){
+    if(!list)
+        return 0;
+    else
+        return list->DeliveryMenu.total + TotalSales(list->next); 
+}
+
+float TotalSales(RestOrder* list){
+    if(!list)
+        return 0;
+    else
+        return list->RestMenu.total + TotalSales(list->next); 
 }
