@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <iomanip>
 using namespace std;
 
 #define PASSWORD "cin.clear"
