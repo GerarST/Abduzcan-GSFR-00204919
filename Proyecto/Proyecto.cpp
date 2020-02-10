@@ -889,7 +889,7 @@ float PrintTotal(Starters* list){
     }
     
 }
-
+//Funciones finales
 float TotalSales(DeliveryOrder* list){
     if(!list)
         return 0;
